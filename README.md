@@ -2,6 +2,8 @@
 
 Turtle is a jump&run built using [Phaser.io](http://phaser.io/) in the context of the [Multimedia Programming-seminar at Munich’s Ludwig-Maximilians-Universtität](http://www.medien.ifi.lmu.de/lehre/ss14/bmmp/index.xhtml.en).
 
+A demo is available at <http://dhabersack.github.io/turtle>.
+
 ## How to build
 
 To run the project locally, you need to install the following tools:
