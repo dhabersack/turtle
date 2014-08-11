@@ -3817,7 +3817,7 @@ var MenuState = {
   fx: null,
 
   preload: function() {
-    this.load.spritesheet('player', '/img/sprites/turtle.png', 32, 64);
+    this.load.spritesheet('player', 'img/sprites/turtle.png', 32, 64);
   },
 
   create: function() {
