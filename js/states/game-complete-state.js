@@ -1,4 +1,8 @@
 var GameCompleteState = {
+  preload: function() {
+    game.load.spritesheet('player', 'img/sprites/turtle.png', 32, 64);
+  },
+
   create: function() {
     var game,
         menuLabel,
