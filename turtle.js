@@ -3737,10 +3737,6 @@ var Worm = (function() {
 })();
 
 var GameCompleteState = {
-  preload: function() {
-    this.load.spritesheet('player', 'img/sprites/turtle.png', 32, 64);
-  },
-
   create: function() {
     var game,
         menuLabel,
@@ -3782,11 +3778,14 @@ var GameCompleteState = {
 };
 
 var ImprintState = {
-    fx: null,
+  fx: null,
 
   create: function() {
-    var textLabel,
+    var that,
+        textLabel,
         menuLabel;
+
+    that = this;
 
     this.stage.backgroundColor = config.colors.lightGreen;
 
@@ -3797,7 +3796,6 @@ var ImprintState = {
     menuLabel = helper.addText(0.5, 1, '← Menu');
     menuLabel.inputEnabled = true;
 
-    var that = this;
     menuLabel.events.onInputUp.add(function() {
       that.fx.pause('menu');
       game.state.start('menu');
@@ -3816,15 +3814,15 @@ var ImprintState = {
 var MenuState = {
   fx: null,
 
-  preload: function() {
-    this.load.spritesheet('player', 'img/sprites/turtle.png', 32, 64);
-  },
-
   create: function() {
-    var game = this.game,
+    var game,
         imprintLabel,
         player,
-        playLabel;
+        playLabel,
+        that;
+
+    game = this.game;
+    that = this;
 
     this.fx = game.add.audio('menu');
     this.fx.addMarker('menu', 0, 12, 1, true);
@@ -3838,7 +3836,6 @@ var MenuState = {
     playLabel = helper.addText(3, 12, '→ Play');
     playLabel.inputEnabled = true;
 
-    var that = this;
     playLabel.events.onInputUp.add(function() {
       that.fx.pause('menu');
       game.state.start('play');
@@ -3851,7 +3848,7 @@ var MenuState = {
       game.state.start('imprint');
     });
 
-    player = new Player(this.game, 7, 8, 0);
+    player = new Player(game, 7, 8, 0);
   }
 };
 
@@ -3879,61 +3876,6 @@ var PlayState = {
   snake: null,
   stork: null,
   tilemap: null,
-
-  preload: function() {
-    var goodies,
-        goody,
-        level,
-        levels;
-
-    goodies = config.goodies;
-    for (goody in goodies) {
-      if (goodies.hasOwnProperty(goody)) {
-        this.load.image(goody, 'img/goodies/' + goody + '.png');
-      }
-    }
-
-    game.load.audio('aua', 'music/aua.mp3');
-    game.load.audio('backgroundmusic', 'music/backgroundmusic.mp3');
-    game.load.audio('dring', 'music/dring.mp3');
-    game.load.audio('dying', 'music/dying.mp3');
-    game.load.audio('gameover', 'music/gameover.mp3');
-    game.load.audio('gulp', 'music/gulp.mp3');
-    game.load.audio('plop', 'music/plop.mp3');
-    game.load.audio('wahoo', 'music/wahoo.mp3');
-    game.load.audio('whoop', 'music/whoop.mp3');
-    game.load.audio('woo', 'music/woo.mp3');
-
-    game.load.image('desert-tiles', 'img/tiles/desert.png');
-    game.load.image('forest-tiles', 'img/tiles/forest.png');
-    game.load.image('sea-tiles', 'img/tiles/sea.png');
-    game.load.image('winter-tiles', 'img/tiles/winter.png');
-    game.load.image('life', 'img/images/life.png');
-
-    game.load.spritesheet('lanternfish', 'img/sprites/lanternfish.png', 80, 80);
-    game.load.spritesheet('caterpillar', 'img/sprites/caterpillar.png', 48, 16);
-    game.load.spritesheet('jellyfish', 'img/sprites/jellyfish.png', 32, 48);
-    game.load.spritesheet('penguin', 'img/sprites/penguin.png', 32, 28);
-    game.load.spritesheet('player', 'img/sprites/turtle.png', 32, 64);
-    game.load.spritesheet('polarbaer', 'img/sprites/polarbaer.png', 72, 72);
-    game.load.spritesheet('pufferfish', 'img/sprites/pufferfish.png', 32, 32);
-    game.load.spritesheet('scorpion', 'img/sprites/scorpion.png', 32, 18);
-    game.load.spritesheet('snake', 'img/sprites/snake.png', 82, 80);
-    game.load.spritesheet('stork', 'img/sprites/stork.png', 144, 132);
-    game.load.spritesheet('worm', 'img/sprites/worm.png', 48, 16);
-
-    game.load.spritesheet('desert-spritesheet', 'img/tiles/desert.png', 32, 32);
-    game.load.spritesheet('forest-spritesheet', 'img/tiles/forest.png', 32, 32);
-    game.load.spritesheet('sea-spritesheet', 'img/tiles/sea.png', 32, 32);
-    game.load.spritesheet('winter-spritesheet', 'img/tiles/winter.png', 32, 32);
-
-    levels = ['1-1', '1-2', '1-3', '2-1', '2-2', '2-3', '3-1', '3-2', '3-3', '4-1', '4-2', '4-3'];
-    for (var i = 0, l = levels.length; i < l; i += 1) {
-      level = levels[i];
-
-      game.load.tilemap(level + '-tilemap', 'img/tiles/' + level + '.json', null, Phaser.Tilemap.TILED_JSON);
-    }
-  },
 
   create: function() {
     this.fx = game.add.audio('backgroundmusic');
@@ -4581,13 +4523,66 @@ var PlayState = {
 
 var PreloadState = {
   preload: function() {
-    this.ready = false;
+    var audioFile,
+        audioFiles,
+        goodies,
+        goody,
+        level,
+        levels,
+        loadingLabel;
 
     this.load.onLoadComplete.addOnce(this.onLoadComplete, this);
+    this.ready = false;
+    this.stage.backgroundColor = config.colors.gray;
 
-    game.load.audio('menu', 'music/menu.mp3');
+    loadingLabel = helper.addText(0, 0, 'Loading…');
+    loadingLabel.x = (game.width - loadingLabel.width) / 2;
+    loadingLabel.y = (game.height - loadingLabel.height) / 2;
+
+    goodies = config.goodies;
+    for (goody in goodies) {
+      if (goodies.hasOwnProperty(goody)) {
+        game.load.image(goody, 'img/goodies/' + goody + '.png');
+      }
+    }
 
     game.load.spritesheet('player', 'img/sprites/turtle.png', 32, 64);
+
+    audioFiles = config.audioFiles;
+    for (var i = 0, l = audioFiles.length; i < l; i += 1) {
+      audioFile = audioFiles[i];
+      game.load.audio(audioFile, 'music/' + audioFile + '.mp3');
+    }
+
+    game.load.image('desert-tiles', 'img/tiles/desert.png');
+    game.load.image('forest-tiles', 'img/tiles/forest.png');
+    game.load.image('sea-tiles', 'img/tiles/sea.png');
+    game.load.image('winter-tiles', 'img/tiles/winter.png');
+    game.load.image('life', 'img/images/life.png');
+
+    game.load.spritesheet('lanternfish', 'img/sprites/lanternfish.png', 80, 80);
+    game.load.spritesheet('caterpillar', 'img/sprites/caterpillar.png', 48, 16);
+    game.load.spritesheet('jellyfish', 'img/sprites/jellyfish.png', 32, 48);
+    game.load.spritesheet('penguin', 'img/sprites/penguin.png', 32, 28);
+    game.load.spritesheet('player', 'img/sprites/turtle.png', 32, 64);
+    game.load.spritesheet('polarbaer', 'img/sprites/polarbaer.png', 72, 72);
+    game.load.spritesheet('pufferfish', 'img/sprites/pufferfish.png', 32, 32);
+    game.load.spritesheet('scorpion', 'img/sprites/scorpion.png', 32, 18);
+    game.load.spritesheet('snake', 'img/sprites/snake.png', 82, 80);
+    game.load.spritesheet('stork', 'img/sprites/stork.png', 144, 132);
+    game.load.spritesheet('worm', 'img/sprites/worm.png', 48, 16);
+
+    game.load.spritesheet('desert-spritesheet', 'img/tiles/desert.png', 32, 32);
+    game.load.spritesheet('forest-spritesheet', 'img/tiles/forest.png', 32, 32);
+    game.load.spritesheet('sea-spritesheet', 'img/tiles/sea.png', 32, 32);
+    game.load.spritesheet('winter-spritesheet', 'img/tiles/winter.png', 32, 32);
+
+    levels = ['1-1', '1-2', '1-3', '2-1', '2-2', '2-3', '3-1', '3-2', '3-3', '4-1', '4-2', '4-3'];
+    for (var j = 0, k = levels.length; j < k; j += 1) {
+      level = levels[j];
+
+      game.load.tilemap(level + '-tilemap', 'img/tiles/' + level + '.json', null, Phaser.Tilemap.TILED_JSON);
+    }
   },
 
   create: function() {
@@ -4599,7 +4594,7 @@ var PreloadState = {
   },
 
   update: function() {
-    if(!!this.ready) {
+    if (!!this.ready) {
       this.game.state.start('menu');
     }
   },
@@ -4611,6 +4606,20 @@ var PreloadState = {
 
 var Config = (function() {
   function Config() {
+    this.audioFiles = [
+      'aua',
+      'backgroundmusic',
+      'dring',
+      'dying',
+      'gameover',
+      'gulp',
+      'menu',
+      'plop',
+      'wahoo',
+      'whoop',
+      'woo'
+    ];
+
     this.colors = {
       gray: '#bcbcbc',
       lightBlue: '#0078f8',

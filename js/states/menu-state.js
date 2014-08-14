@@ -1,15 +1,15 @@
 var MenuState = {
   fx: null,
 
-  preload: function() {
-    this.load.spritesheet('player', 'img/sprites/turtle.png', 32, 64);
-  },
-
   create: function() {
-    var game = this.game,
+    var game,
         imprintLabel,
         player,
-        playLabel;
+        playLabel,
+        that;
+
+    game = this.game;
+    that = this;
 
     this.fx = game.add.audio('menu');
     this.fx.addMarker('menu', 0, 12, 1, true);
@@ -23,7 +23,6 @@ var MenuState = {
     playLabel = helper.addText(3, 12, '→ Play');
     playLabel.inputEnabled = true;
 
-    var that = this;
     playLabel.events.onInputUp.add(function() {
       that.fx.pause('menu');
       game.state.start('play');
@@ -36,6 +35,6 @@ var MenuState = {
       game.state.start('imprint');
     });
 
-    player = new Player(this.game, 7, 8, 0);
+    player = new Player(game, 7, 8, 0);
   }
 };

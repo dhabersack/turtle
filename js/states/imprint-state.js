@@ -1,9 +1,12 @@
 var ImprintState = {
-    fx: null,
+  fx: null,
 
   create: function() {
-    var textLabel,
+    var that,
+        textLabel,
         menuLabel;
+
+    that = this;
 
     this.stage.backgroundColor = config.colors.lightGreen;
 
@@ -14,7 +17,6 @@ var ImprintState = {
     menuLabel = helper.addText(0.5, 1, '← Menu');
     menuLabel.inputEnabled = true;
 
-    var that = this;
     menuLabel.events.onInputUp.add(function() {
       that.fx.pause('menu');
       game.state.start('menu');

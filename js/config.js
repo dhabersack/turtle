@@ -1,5 +1,19 @@
 var Config = (function() {
   function Config() {
+    this.audioFiles = [
+      'aua',
+      'backgroundmusic',
+      'dring',
+      'dying',
+      'gameover',
+      'gulp',
+      'menu',
+      'plop',
+      'wahoo',
+      'whoop',
+      'woo'
+    ];
+
     this.colors = {
       gray: '#bcbcbc',
       lightBlue: '#0078f8',
